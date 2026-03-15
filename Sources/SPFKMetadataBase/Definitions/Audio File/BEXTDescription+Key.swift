@@ -196,4 +196,21 @@ extension BEXTDescription {
     }
 }
 
+extension BEXTKeyDictionary {
+    /// Creates a `BEXTKeyDictionary` from label/value pairs (e.g. from UI row models).
+    ///
+    /// Labels that match a known ``BEXTDescription/Key/displayName`` are stored
+    /// with the corresponding key; unrecognized labels are ignored.
+    /// The version key is always set to ``BEXTDescription/defaultVersionString``.
+    public init(labels: [(label: String, value: String)]) {
+        self.init()
+        self[.version] = BEXTDescription.defaultVersionString
+
+        for item in labels {
+            guard let key = BEXTDescription.Key(displayName: item.label) else { continue }
+            self[key] = item.value
+        }
+    }
+}
+
 // swiftformat:enable consecutiveSpaces

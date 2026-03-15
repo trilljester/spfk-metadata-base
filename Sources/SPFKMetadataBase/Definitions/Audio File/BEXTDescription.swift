@@ -10,6 +10,9 @@ import SPFKAudioBase
 /// Wraps the EBU Tech 3285 BEXT data in a Swift-native type with support for v0, v1 (UMID),
 /// and v2 (loudness) fields. Use ``validated()`` to sanitize placeholder values before display.
 public struct BEXTDescription: Hashable, Sendable {
+    /// The EBU Tech 3285 version written by default (version 2, which adds loudness fields).
+    public static let defaultVersionString = "2"
+
     /// BWF Version 0, 1, or 2. This will be set based on the content provided.
     public var version: Int16 = 0
 

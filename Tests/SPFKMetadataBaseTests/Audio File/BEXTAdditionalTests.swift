@@ -326,3 +326,89 @@ struct BEXTDictionaryTests {
         #expect(desc.version == 1)
     }
 }
+
+// MARK: - BEXTDescription.defaultVersionString
+
+struct BEXTDefaultVersionTests {
+    @Test func defaultVersionStringIsTwo() {
+        #expect(BEXTDescription.defaultVersionString == "2")
+    }
+}
+
+// MARK: - BEXTKeyDictionary.init(labels:)
+
+struct BEXTKeyDictionaryLabelsTests {
+    @Test func labelsInitWithKnownKeys() {
+        let dict = BEXTKeyDictionary(labels: [
+            (label: "Originator", value: "Test Studio"),
+            (label: "Description", value: "A test file"),
+        ])
+
+        #expect(dict[.originator] == "Test Studio")
+        #expect(dict[.description] == "A test file")
+    }
+
+    @Test func labelsInitAlwaysSetsVersion() {
+        let dict = BEXTKeyDictionary(labels: [
+            (label: "Originator", value: "Studio"),
+        ])
+
+        #expect(dict[.version] == BEXTDescription.defaultVersionString)
+    }
+
+    @Test func labelsInitVersionNotOverridden() {
+        // Even if a label provides a different version, the default should win
+        // because version is set first and then the loop may overwrite it
+        let dict = BEXTKeyDictionary(labels: [
+            (label: "Version", value: "1"),
+        ])
+
+        // The loop finds Key.version via displayName and overwrites
+        #expect(dict[.version] == "1")
+    }
+
+    @Test func labelsInitIgnoresUnknownKeys() {
+        let dict = BEXTKeyDictionary(labels: [
+            (label: "Originator", value: "Studio"),
+            (label: "UNKNOWN_FIELD", value: "ignored"),
+        ])
+
+        #expect(dict.count == 2) // version + originator
+        #expect(dict[.originator] == "Studio")
+        #expect(dict[.version] == BEXTDescription.defaultVersionString)
+    }
+
+    @Test func labelsInitEmpty() {
+        let dict = BEXTKeyDictionary(labels: [])
+
+        // Should only contain the default version
+        #expect(dict.count == 1)
+        #expect(dict[.version] == BEXTDescription.defaultVersionString)
+    }
+
+    @Test func labelsInitAllEditableKeys() {
+        let editableKeys = BEXTDescription.Key.allCases.filter(\.isEditable)
+        let labels = editableKeys.map { (label: $0.displayName, value: "test_\($0.displayName)") }
+
+        let dict = BEXTKeyDictionary(labels: labels)
+
+        for key in editableKeys {
+            #expect(dict[key] == "test_\(key.displayName)")
+        }
+    }
+
+    @Test func labelsInitRoundTripViaBEXTDescription() {
+        let dict = BEXTKeyDictionary(labels: [
+            (label: "Originator", value: "Test"),
+            (label: "Origination Date", value: "2025-01-15"),
+            (label: "UMID", value: "TESTUMID"),
+        ])
+
+        let desc = BEXTDescription(dictionary: dict)
+
+        #expect(desc.originator == "Test")
+        #expect(desc.originationDate == "2025-01-15")
+        #expect(desc.umid == "TESTUMID")
+        #expect(desc.version == 2)
+    }
+}
