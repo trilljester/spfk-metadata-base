@@ -1,0 +1,138 @@
+// Copyright Ryan Francesconi. All Rights Reserved.
+
+import Foundation
+import SPFKAudioBase
+import Testing
+
+@testable import SPFKMetadataBase
+
+struct MetaAudioFileDescriptionTests {
+    // MARK: - Helpers
+
+    private func makeDescription(url: URL = URL(fileURLWithPath: "/tmp/test.wav")) -> MetaAudioFileDescription {
+        MetaAudioFileDescription(url: url)
+    }
+
+    // MARK: - Tag Accessors
+
+    @Test func tagForKey() {
+        var desc = makeDescription()
+        desc.tagProperties.set(tag: .title, value: "My Title")
+
+        #expect(desc.tag(for: .title) == "My Title")
+    }
+
+    @Test func tagForKeyMissing() {
+        let desc = makeDescription()
+        #expect(desc.tag(for: .title) == nil)
+    }
+
+    @Test func customTagForKey() {
+        var desc = makeDescription()
+        desc.tagProperties.set(customTag: "MYKEY", value: "Custom Value")
+
+        #expect(desc.customTag(for: "MYKEY") == "Custom Value")
+    }
+
+    @Test func setTag() {
+        var desc = makeDescription()
+        desc.set(tag: .artist, value: "Artist Name")
+
+        #expect(desc.tagProperties.tag(for: .artist) == "Artist Name")
+    }
+
+    @Test func setCustomTag() {
+        var desc = makeDescription()
+        desc.set(customTag: "CUSTOM", value: "value123")
+
+        #expect(desc.tagProperties.customTag(for: "CUSTOM") == "value123")
+    }
+
+    // MARK: - merge(bext:)
+
+    @Test func mergeBextCreatesDescriptionWhenNil() {
+        var desc = makeDescription()
+        #expect(desc.bextDescription == nil)
+
+        desc.merge(bext: [.description: "Test Desc"])
+
+        #expect(desc.bextDescription != nil)
+        #expect(desc.bextDescription?[.description] == "Test Desc")
+    }
+
+    @Test func mergeBextMergesIntoExisting() {
+        var desc = makeDescription()
+        desc.bextDescription = BEXTDescription()
+        desc.bextDescription?[.originator] = "Original"
+
+        desc.merge(bext: [.description: "New Desc"])
+
+        #expect(desc.bextDescription?[.originator] == "Original")
+        #expect(desc.bextDescription?[.description] == "New Desc")
+    }
+
+    // MARK: - BPM Property
+
+    @Test func bpmGetFromTag() {
+        var desc = makeDescription()
+        desc.tagProperties.set(tag: .bpm, value: "120.5")
+
+        #expect(desc.bpm?.rawValue == 120.5)
+    }
+
+    @Test func bpmGetNilWhenNoTag() {
+        let desc = makeDescription()
+        #expect(desc.bpm == nil)
+    }
+
+    @Test func bpmSet() {
+        var desc = makeDescription()
+        desc.bpm = Bpm(140)!
+
+        #expect(desc.tagProperties.tags[.bpm] != nil)
+    }
+
+    @Test func bpmSetNil() {
+        var desc = makeDescription()
+        desc.tagProperties.set(tag: .bpm, value: "120")
+        desc.bpm = nil
+
+        #expect(desc.tagProperties.tags[.bpm] == nil)
+    }
+
+    // MARK: - Codable
+
+    @Test func codableRoundTrip() throws {
+        var original = makeDescription()
+        original.fileType = .wav
+        original.audioFormat = AudioFormatProperties(
+            channelCount: 2, sampleRate: 44100, bitsPerChannel: 24, duration: 10.0
+        )
+        original.tagProperties.set(tag: .title, value: "Test Title")
+        original.xmpMetadata = "<xmp>test</xmp>"
+        original.iXMLMetadata = "<ixml>test</ixml>"
+
+        let data = try JSONEncoder().encode(original)
+        let decoded = try JSONDecoder().decode(MetaAudioFileDescription.self, from: data)
+
+        #expect(decoded.url == original.url)
+        #expect(decoded.fileType == original.fileType)
+        #expect(decoded.audioFormat == original.audioFormat)
+        #expect(decoded.tag(for: .title) == "Test Title")
+        #expect(decoded.xmpMetadata == original.xmpMetadata)
+        #expect(decoded.iXMLMetadata == original.iXMLMetadata)
+    }
+
+    @Test func codableNilOptionals() throws {
+        let original = makeDescription()
+
+        let data = try JSONEncoder().encode(original)
+        let decoded = try JSONDecoder().decode(MetaAudioFileDescription.self, from: data)
+
+        #expect(decoded.fileType == nil)
+        #expect(decoded.audioFormat == nil)
+        #expect(decoded.bextDescription == nil)
+        #expect(decoded.xmpMetadata == nil)
+        #expect(decoded.iXMLMetadata == nil)
+    }
+}
