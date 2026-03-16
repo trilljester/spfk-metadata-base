@@ -68,6 +68,5 @@ struct ImageDescriptionInitTests {
         #expect(desc.thumbnailImage == nil)
         #expect(desc.thumbnailData == nil)
         #expect(desc.description == nil)
-        #expect(desc.isDirty == false)
     }
 }

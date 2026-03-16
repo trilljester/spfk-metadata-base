@@ -127,7 +127,28 @@ extension MetaAudioFileDescription: Codable {
     }
 }
 
-// MARK: Convenience functions
+// MARK: - Comparison
+
+extension MetaAudioFileDescription {
+    /// Compares all metadata properties except `imageDescription`.
+    ///
+    /// Image dirtiness is tracked separately (via `isImageDirty` on `PlaylistElement`),
+    /// and `ImageDescription` thumbnail data is non-deterministic across re-encodes,
+    /// so excluding it avoids false-positive dirty flags.
+    public func isEqualExcludingImage(to other: MetaAudioFileDescription) -> Bool {
+        url == other.url &&
+            urlProperties == other.urlProperties &&
+            fileType == other.fileType &&
+            audioFormat == other.audioFormat &&
+            tagProperties == other.tagProperties &&
+            bextDescription == other.bextDescription &&
+            iXMLMetadata == other.iXMLMetadata &&
+            xmpMetadata == other.xmpMetadata &&
+            markerCollection == other.markerCollection
+    }
+}
+
+// MARK: - Convenience functions
 
 extension MetaAudioFileDescription {
     /// Returns the value of a standard tag, or `nil` if not present.

@@ -135,4 +135,46 @@ struct MetaAudioFileDescriptionTests {
         #expect(decoded.xmpMetadata == nil)
         #expect(decoded.iXMLMetadata == nil)
     }
+
+    // MARK: - isEqualExcludingImage
+
+    @Test func isEqualExcludingImageTrueForIdentical() {
+        let a = makeDescription()
+        let b = makeDescription()
+
+        #expect(a.isEqualExcludingImage(to: b))
+    }
+
+    @Test func isEqualExcludingImageTrueWhenOnlyImageDiffers() {
+        var a = makeDescription()
+        var b = makeDescription()
+
+        // Give them different thumbnail data
+        a.imageDescription.description = "Front Cover"
+        b.imageDescription.description = "Back Cover"
+
+        // Full equality should fail
+        #expect(a != b)
+
+        // But excluding image they should still match
+        #expect(a.isEqualExcludingImage(to: b))
+    }
+
+    @Test func isEqualExcludingImageFalseWhenTagsDiffer() {
+        var a = makeDescription()
+        var b = makeDescription()
+
+        a.set(tag: .title, value: "Different")
+
+        #expect(!a.isEqualExcludingImage(to: b))
+    }
+
+    @Test func isEqualExcludingImageFalseWhenBextDiffers() {
+        var a = makeDescription()
+        var b = makeDescription()
+
+        a.merge(bext: [.description: "BWF description"])
+
+        #expect(!a.isEqualExcludingImage(to: b))
+    }
 }

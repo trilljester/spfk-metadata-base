@@ -19,9 +19,6 @@ public struct ImageDescription: Sendable, Hashable {
     /// Optional text description of the image (e.g., "Front Cover").
     public var description: String?
 
-    /// Indicates whether the artwork has been modified and needs to be written back to the file.
-    public private(set) var isDirty: Bool = false
-
     public init() {}
 
     /// Generates a small PNG thumbnail from the current ``cgImage`` and stores it in ``thumbnailData``.
