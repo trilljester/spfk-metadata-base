@@ -162,7 +162,7 @@ struct MetaAudioFileDescriptionTests {
 
     @Test func isEqualExcludingImageFalseWhenTagsDiffer() {
         var a = makeDescription()
-        var b = makeDescription()
+        let b = makeDescription()
 
         a.set(tag: .title, value: "Different")
 
@@ -171,7 +171,7 @@ struct MetaAudioFileDescriptionTests {
 
     @Test func isEqualExcludingImageFalseWhenBextDiffers() {
         var a = makeDescription()
-        var b = makeDescription()
+        let b = makeDescription()
 
         a.merge(bext: [.description: "BWF description"])
 
