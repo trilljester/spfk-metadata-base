@@ -35,5 +35,4 @@ extension MetaAudioFileDescription {
             maxShortTermLoudness: tagProperties[.loudnessMaxShortTerm]?.double,
         )
     }
-
 }
