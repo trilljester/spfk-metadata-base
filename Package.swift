@@ -15,6 +15,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/ryanfrancesconi/spfk-audio-base", from: "0.0.4"),
+        .package(url: "https://github.com/ryanfrancesconi/spfk-raw-codable", from: "1.0.0"),
         .package(url: "https://github.com/ryanfrancesconi/spfk-utils", from: "0.0.8"),
         .package(url: "https://github.com/ryanfrancesconi/spfk-testing", from: "0.0.9"),
     ],
@@ -23,6 +24,7 @@ let package = Package(
             name: "SPFKMetadataBase",
             dependencies: [
                 .product(name: "SPFKAudioBase", package: "spfk-audio-base"),
+                .product(name: "RawCodable", package: "spfk-raw-codable"),
                 .product(name: "SPFKUtils", package: "spfk-utils"),
             ]
         ),

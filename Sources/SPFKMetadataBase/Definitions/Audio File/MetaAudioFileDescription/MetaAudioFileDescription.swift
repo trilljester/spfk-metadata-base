@@ -9,7 +9,7 @@ import SPFKUtils
 ///
 /// Aggregates tag properties, audio format info, BEXT data, iXML, markers, and embedded artwork
 /// into a single `Codable`, `Sendable` type. Use ``init(parsing:)`` to read all metadata from a URL,
-/// and ``save(imageNeedsSave:)`` to write changes back.
+/// and ``save(dirtyFlags:)`` to write changes back.
 ///
 /// WAV files are handled through the `WaveFileC` bridge (libsndfile) for BEXT, INFO, and marker support.
 /// All other formats use TagLib and AVFoundation.
