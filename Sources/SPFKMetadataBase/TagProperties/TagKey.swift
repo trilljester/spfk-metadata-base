@@ -93,9 +93,6 @@ public enum TagKey: String, CaseIterable, Codable, Comparable, Sendable {
 
     // MARK: - TXXX Non-Standard SPFKMetadata defined frames
 
-    // Color. Defined by SPFKMetadata
-    case color
-
     // TXXX Loudness Tags. Defined by SPFKMetadata. These are present in BEXT chunks but missing in standard ID3.
 
     case loudnessIntegrated
