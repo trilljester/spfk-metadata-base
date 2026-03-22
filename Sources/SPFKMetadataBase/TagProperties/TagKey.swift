@@ -1,5 +1,6 @@
 // Copyright Ryan Francesconi. All Rights Reserved. Revision History at https://github.com/ryanfrancesconi/spfk-metadata
 // swiftformat:disable consecutiveSpaces
+// swift-format-ignore-file
 
 import Foundation
 import SPFKBase
@@ -91,6 +92,9 @@ public enum TagKey: String, CaseIterable, Codable, Comparable, Sendable {
     case work
 
     // MARK: TXXX Non-Standard packageDefined frames
+
+    // Color. Defined by SPFKMetadata
+    case color
 
     // TXXX Loudness Tags. Defined by SPFKMetadata. These are present in BEXT chunks but missing in standard ID3.
 
