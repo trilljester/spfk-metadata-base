@@ -2,7 +2,7 @@
 
 import Foundation
 import SPFKAudioBase
-import SPFKUtils
+import SPFKBase
 
 /// Format-agnostic audio marker representing a point or region within an audio file.
 ///
@@ -64,7 +64,6 @@ public struct AudioMarkerDescription: Hashable, Sendable, Equatable, Comparable,
         self.markerID = markerID
         self.hexColor = hexColor
     }
-
 }
 
 extension AudioMarkerDescription: CustomStringConvertible, CustomDebugStringConvertible {
