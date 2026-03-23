@@ -8,7 +8,7 @@ import SPFKUtils
 ///
 /// Stores RIFF cue points, ID3 CHAP frames, or AVFoundation chapter markers in a unified
 /// `Codable`, `Sendable` type. Ordered by start time (then name) for sorted collections.
-public struct AudioMarkerDescription: Hashable, Sendable, Equatable, Comparable {
+public struct AudioMarkerDescription: Hashable, Sendable, Equatable, Comparable, Codable {
     public static func == (lhs: Self, rhs: Self) -> Bool {
         guard let id1 = lhs.markerID, let id2 = rhs.markerID else {
             //
@@ -58,46 +58,13 @@ public struct AudioMarkerDescription: Hashable, Sendable, Equatable, Comparable 
         hexColor: HexColor? = nil
     ) {
         self.name = name
-        self.startTime = startTime
-        self.endTime = endTime
+        self.startTime = startTime.isNaN ? 0 : startTime
+        self.endTime = endTime?.isNaN == true ? nil : endTime
         self.sampleRate = sampleRate
         self.markerID = markerID
         self.hexColor = hexColor
     }
 
-}
-
-extension AudioMarkerDescription: Codable {
-    enum CodingKeys: String, CodingKey {
-        case name
-        case startTime
-        case endTime
-        case sampleRate
-        case markerID
-        case hexColor
-    }
-
-    public init(from decoder: any Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-
-        startTime = try container.decode(TimeInterval.self, forKey: .startTime)
-        name = try? container.decodeIfPresent(String.self, forKey: .name)
-        endTime = try? container.decodeIfPresent(TimeInterval.self, forKey: .endTime)
-        sampleRate = try? container.decodeIfPresent(Double.self, forKey: .sampleRate)
-        markerID = try? container.decodeIfPresent(Int.self, forKey: .markerID)
-        hexColor = try? container.decodeIfPresent(HexColor.self, forKey: .hexColor)
-    }
-
-    public func encode(to encoder: any Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-
-        try container.encode(startTime, forKey: .startTime)
-        try container.encodeIfPresent(name, forKey: .name)
-        try container.encodeIfPresent(endTime, forKey: .endTime)
-        try container.encodeIfPresent(sampleRate, forKey: .sampleRate)
-        try container.encodeIfPresent(markerID, forKey: .markerID)
-        try container.encodeIfPresent(hexColor, forKey: .hexColor)
-    }
 }
 
 extension AudioMarkerDescription: CustomStringConvertible, CustomDebugStringConvertible {

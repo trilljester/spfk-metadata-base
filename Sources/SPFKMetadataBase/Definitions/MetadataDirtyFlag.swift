@@ -1,13 +1,10 @@
 // Copyright Ryan Francesconi. All Rights Reserved. Revision History at https://github.com/ryanfrancesconi
 
-import RawCodable
-
 /// Identifies which aspects of an audio file's metadata have unsaved changes.
 ///
 /// Used as a `Set<MetadataDirtyFlag>` to track what needs writing.
 /// The save orchestration layer decides which subsystem handles each flag.
-@RawCodable
-public enum MetadataDirtyFlag: String, Hashable, Sendable {
+public enum MetadataDirtyFlag: String, Hashable, Sendable, Codable {
     /// Tags, BEXT, iXML — one MetaAudioFileDescription.save() call
     case metadata
     /// Embedded artwork

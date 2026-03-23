@@ -55,18 +55,15 @@ extension ImageDescription: Codable {
 
     public init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-
-        thumbnailData = try? container.decodeIfPresent(Data.self, forKey: .thumbnailData)
-        description = try? container.decodeIfPresent(String.self, forKey: .description)
-
+        thumbnailData = try container.decodeIfPresent(Data.self, forKey: .thumbnailData)
+        description = try container.decodeIfPresent(String.self, forKey: .description)
         updateThumbnail()
     }
 
     public func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-
-        try? container.encodeIfPresent(thumbnailData, forKey: .thumbnailData)
-        try? container.encodeIfPresent(description, forKey: .description)
+        try container.encodeIfPresent(thumbnailData, forKey: .thumbnailData)
+        try container.encodeIfPresent(description, forKey: .description)
     }
 }
 

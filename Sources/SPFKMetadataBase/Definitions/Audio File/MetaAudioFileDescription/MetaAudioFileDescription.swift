@@ -71,61 +71,7 @@ public struct MetaAudioFileDescription: Hashable, Sendable {
     }
 }
 
-extension MetaAudioFileDescription: Codable {
-    enum CodingKeys: String, CodingKey {
-        case url
-        case urlProperties
-        case fileType
-        case audioFormat
-        case tagProperties
-        case bextDescription
-        case xmpMetadata
-        case iXMLMetadata
-        case markerCollection
-        case imageDescription
-    }
-
-    public init(from decoder: any Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-
-        url = try container.decode(URL.self, forKey: .url)
-        urlProperties = try container.decode(URLProperties.self, forKey: .urlProperties)
-        tagProperties = try container.decode(TagProperties.self, forKey: .tagProperties)
-        imageDescription = try container.decode(ImageDescription.self, forKey: .imageDescription)
-
-        fileType = try? container.decodeIfPresent(AudioFileType.self, forKey: .fileType)
-        audioFormat = try? container.decodeIfPresent(AudioFormatProperties.self, forKey: .audioFormat)
-
-        bextDescription = try? container.decodeIfPresent(BEXTDescription.self, forKey: .bextDescription)
-        xmpMetadata = try? container.decodeIfPresent(String.self, forKey: .xmpMetadata)
-        iXMLMetadata = try? container.decodeIfPresent(String.self, forKey: .iXMLMetadata)
-
-        if let markerCollection = try? container.decodeIfPresent(
-            AudioMarkerDescriptionCollection.self, forKey: .markerCollection)
-        {
-            self.markerCollection = markerCollection
-        }
-    }
-
-    public func encode(to encoder: any Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-
-        // required
-        try container.encode(url, forKey: .url)
-        try container.encode(urlProperties, forKey: .urlProperties)
-        try container.encode(tagProperties, forKey: .tagProperties)
-        try container.encode(imageDescription, forKey: .imageDescription)
-
-        // optionals
-        try? container.encodeIfPresent(fileType, forKey: .fileType)
-        try? container.encodeIfPresent(audioFormat, forKey: .audioFormat)
-        try? container.encodeIfPresent(bextDescription, forKey: .bextDescription)
-        try? container.encodeIfPresent(xmpMetadata, forKey: .xmpMetadata)
-        try? container.encodeIfPresent(iXMLMetadata, forKey: .iXMLMetadata)
-
-        try? container.encode(markerCollection, forKey: .markerCollection)
-    }
-}
+extension MetaAudioFileDescription: Codable {}
 
 // MARK: - Comparison
 
