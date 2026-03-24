@@ -1,5 +1,5 @@
 import Foundation
-import SPFKUtils
+import SPFKBase
 import Testing
 
 @testable import SPFKMetadataBase
