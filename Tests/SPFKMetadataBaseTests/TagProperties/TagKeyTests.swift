@@ -144,6 +144,64 @@ struct TagKeyTests {
         #expect(TagKey(infoFrame: .firstLanguage) == .language)
     }
 
+    // MARK: - Init from string (case-insensitive)
+
+    @Test func initFromStringExactRawValue() {
+        #expect(TagKey(string: "bpm") == .bpm)
+        #expect(TagKey(string: "artist") == .artist)
+        #expect(TagKey(string: "title") == .title)
+        #expect(TagKey(string: "initialKey") == .initialKey)
+    }
+
+    @Test func initFromStringUppercasedRawValue() {
+        #expect(TagKey(string: "BPM") == .bpm)
+        #expect(TagKey(string: "ARTIST") == .artist)
+        #expect(TagKey(string: "TITLE") == .title)
+    }
+
+    @Test func initFromStringMixedCaseRawValue() {
+        #expect(TagKey(string: "Bpm") == .bpm)
+        #expect(TagKey(string: "Artist") == .artist)
+        #expect(TagKey(string: "InitialKey") == .initialKey)
+        #expect(TagKey(string: "INITIALKEY") == .initialKey)
+    }
+
+    @Test func initFromStringDisplayName() {
+        #expect(TagKey(string: "Initial Key") == .initialKey)
+        #expect(TagKey(string: "Album Artist") == .albumArtist)
+        #expect(TagKey(string: "Loudness Integrated (LUFS)") == .loudnessIntegrated)
+    }
+
+    @Test func initFromStringDisplayNameCaseInsensitive() {
+        #expect(TagKey(string: "initial key") == .initialKey)
+        #expect(TagKey(string: "ALBUM ARTIST") == .albumArtist)
+        #expect(TagKey(string: "loudness integrated (lufs)") == .loudnessIntegrated)
+    }
+
+    @Test func initFromStringID3Frame() {
+        #expect(TagKey(string: "TBPM") == .bpm)
+        #expect(TagKey(string: "TIT2") == .title)
+        #expect(TagKey(string: "TPE1") == .artist)
+    }
+
+    @Test func initFromStringID3FrameLowercase() {
+        #expect(TagKey(string: "tbpm") == .bpm)
+        #expect(TagKey(string: "tit2") == .title)
+        #expect(TagKey(string: "tpe1") == .artist)
+    }
+
+    @Test func initFromStringNil() {
+        #expect(TagKey(string: "notakey") == nil)
+        #expect(TagKey(string: "") == nil)
+        #expect(TagKey(string: "???") == nil)
+    }
+
+    @Test func initFromStringRawValueRoundTrip() {
+        for key in TagKey.allCases {
+            #expect(TagKey(string: key.rawValue) == key, "Failed round-trip for \(key)")
+        }
+    }
+
     // MARK: - Comparable
 
     @Test func comparable() {

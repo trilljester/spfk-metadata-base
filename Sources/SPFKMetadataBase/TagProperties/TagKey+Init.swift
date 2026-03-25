@@ -8,6 +8,15 @@ extension TagKey {
     private static let taglibKeyMap: [String: TagKey] = Dictionary(uniqueKeysWithValues: allCases.map { ($0.taglibKey, $0) })
     private static let displayNameMap: [String: TagKey] = Dictionary(uniqueKeysWithValues: allCases.map { ($0.displayName, $0) })
 
+    private static let lowercasedRawValueMap: [String: TagKey] = Dictionary(
+        uniqueKeysWithValues: allCases.map { ($0.rawValue.lowercased(), $0) }
+    )
+
+    private static let lowercasedDisplayNameMap: [String: TagKey] = Dictionary(
+        allCases.map { ($0.displayName.lowercased(), $0) },
+        uniquingKeysWith: { first, _ in first }
+    )
+
     private static let id3FrameMap: [ID3FrameKey: TagKey] = {
         var map = [ID3FrameKey: TagKey]()
         for key in allCases {
@@ -27,6 +36,29 @@ extension TagKey {
             }
             for alt in key.infoAlternates where map[alt] == nil {
                 map[alt] = key
+            }
+        }
+        return map
+    }()
+
+    /// Keyed by uppercased ID3 frame identifier string (e.g. `"TBPM"`) → TagKey.
+    private static let id3FrameValueMap: [String: TagKey] = {
+        var map = [String: TagKey]()
+        for key in allCases where map[key.id3Frame.value] == nil {
+            map[key.id3Frame.value] = key
+        }
+        return map
+    }()
+
+    /// Keyed by uppercased INFO frame identifier string (e.g. `"IBPM"`) → TagKey.
+    private static let infoFrameValueMap: [String: TagKey] = {
+        var map = [String: TagKey]()
+        for key in allCases {
+            if let frame = key.infoFrame, map[frame.value] == nil {
+                map[frame.value] = key
+            }
+            for alt in key.infoAlternates where map[alt.value] == nil {
+                map[alt.value] = key
             }
         }
         return map
@@ -57,20 +89,26 @@ extension TagKey {
     }
 
     public init?(string: String) {
-        if let value = TagKey(rawValue: string) {
+        let lowercased = string.lowercased()
+
+        if let value = Self.lowercasedRawValueMap[lowercased] {
             self = value
             return
-        } else if let value = TagKey(displayName: string) {
+        }
+
+        if let value = Self.lowercasedDisplayNameMap[lowercased] {
             self = value
             return
-        } else if let frame = ID3FrameKey(value: string.uppercased()),
-                  let value = TagKey(id3Frame: frame)
-        {
+        }
+
+        let uppercased = string.uppercased()
+
+        if let value = Self.id3FrameValueMap[uppercased] {
             self = value
             return
-        } else if let frame = InfoFrameKey(value: string.uppercased()),
-                  let value = TagKey(infoFrame: frame)
-        {
+        }
+
+        if let value = Self.infoFrameValueMap[uppercased] {
             self = value
             return
         }
