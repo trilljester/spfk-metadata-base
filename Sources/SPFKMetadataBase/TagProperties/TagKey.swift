@@ -110,6 +110,11 @@ public enum TagKey: String, CaseIterable, Codable, Comparable, Sendable {
     case replayGainAlbumPeak
     case replayGainAlbumRange
     case replayGainReferenceLoudness
+
+    // UCS - Universal Category System
+
+    case ucsCategory
+    case ucsSubcategory
 }
 
 // MARK: - overrides
@@ -134,6 +139,8 @@ extension TagKey {
         case .loudnessTruePeak:     "Loudness True Peak (dBTP)"
         case .loudnessMaxMomentary: "Loudness Max Momentary (LUFS)"
         case .loudnessMaxShortTerm: "Loudness Max Short-Term (LUFS)"
+        case .ucsCategory:          "UCS Category"
+        case .ucsSubcategory:       "UCS Subcategory"
 
         //
         default:
