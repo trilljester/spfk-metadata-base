@@ -3,7 +3,7 @@
 import Foundation
 
 /// Logical grouping of ``TagKey`` values for organizing tag display in UI (e.g., common, music, loudness).
-public enum TagSet: CaseIterable, Hashable, Sendable {
+public enum TagGroup: CaseIterable, Hashable, Sendable {
     case common
     case music
     case ucs
@@ -29,25 +29,25 @@ public enum TagSet: CaseIterable, Hashable, Sendable {
     public var keys: [TagKey] {
         switch self {
         case .other:
-            TagSet.otherTags
+            TagGroup.otherTags
 
         case .common:
-            TagSet.commonTags
+            TagGroup.commonTags
 
         case .music:
-            TagSet.musicTags
+            TagGroup.musicTags
 
         case .ucs:
-            TagSet.ucsTags
+            TagGroup.ucsTags
 
         case .loudness:
-            TagSet.loudnessTags
+            TagGroup.loudnessTags
 
         case .replayGain:
-            TagSet.replayGainTags
+            TagGroup.replayGainTags
 
         case .utility:
-            TagSet.utilityTags
+            TagGroup.utilityTags
         }
     }
 
@@ -61,11 +61,11 @@ public enum TagSet: CaseIterable, Hashable, Sendable {
     }
 }
 
-extension TagSet {
-    private static let otherTags: [TagKey] = TagKey.allCases.filter {
-        !commonTags.contains($0) && !musicTags.contains($0) && !loudnessTags.contains($0)
-            && !replayGainTags.contains($0) && !utilityTags.contains($0)
-    }
+extension TagGroup {
+    private static let otherTags: [TagKey] = {
+        let known = Set(commonTags + musicTags + ucsTags + loudnessTags + replayGainTags + utilityTags)
+        return TagKey.allCases.filter { !known.contains($0) }
+    }()
 
     static let commonTags: [TagKey] = [
         .album,
@@ -128,13 +128,5 @@ extension TagSet {
         .radioStationWebpage,
         .releaseDate,
         .taggingDate,
-    ]
-
-    static let sortTags: [TagKey] = [
-        .albumArtistSort,
-        .albumSort,
-        .artistSort,
-        .composerSort,
-        .titleSort,
     ]
 }
