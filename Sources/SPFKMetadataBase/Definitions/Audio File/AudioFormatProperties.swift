@@ -36,6 +36,8 @@ public struct AudioFormatProperties: Hashable, Sendable {
     /// Bit rate label (e.g., "320 kbit/s"). Empty for uncompressed formats.
     public private(set) var bitRateDescription: String = ""
 
+    public private(set) var sampleRateDescription: String = ""
+
     public init(
         channelCount: AVAudioChannelCount,
         sampleRate: Double,
@@ -62,6 +64,7 @@ public struct AudioFormatProperties: Hashable, Sendable {
     private mutating func initialize() {
         updateChannelsDescription()
         updateBitRateDescription()
+        updateSampleRateDescription()
         updateFormatDescription()
         updateDurationDescription()
     }
@@ -93,7 +96,7 @@ public struct AudioFormatProperties: Hashable, Sendable {
         bitRateDescription = "\(bitRate) kbit/s"
     }
 
-    private mutating func updateFormatDescription() {
+    private mutating func updateSampleRateDescription() {
         let kHz = (sampleRate / 1000).truncated(decimalPlaces: 1)
         var kHzString = kHz.string
 
@@ -101,7 +104,11 @@ public struct AudioFormatProperties: Hashable, Sendable {
             kHzString = kHz.int.string
         }
 
-        var out = "\(kHzString) kHz"
+        sampleRateDescription = "\(kHzString) kHz"
+    }
+
+    private mutating func updateFormatDescription() {
+        var out = sampleRateDescription
 
         if let bitsPerChannel {
             out += bitsPerChannel > 0 ? ", \(bitsPerChannel) bit" : ""
