@@ -133,44 +133,72 @@ extension TagPropertiesContainerModel {
     /// Routes to ``tags`` if a matching ``TagKey`` exists, otherwise to ``customTags``.
     /// Control characters are stripped and the value is trimmed.
     public mutating func set(taglibKey key: String, value: String) {
-        let value = value.removing(.controlCharacters).trimmed
+        let resolvedFrame = TagKey(taglibKey: key)
 
-        guard let frame = TagKey(taglibKey: key) else {
-            customTags[key] = value
+        let cleanedValue: String
+        if resolvedFrame == .lyrics {
+            cleanedValue = value
+                .replacingOccurrences(of: "\r\n", with: "\n")
+                .replacingOccurrences(of: "\r", with: "\n")
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+        } else {
+            cleanedValue = value.removing(.controlCharacters).trimmed
+        }
+
+        guard let frame = resolvedFrame else {
+            customTags[key] = cleanedValue
             return
         }
 
-        tags[frame] = value
+        tags[frame] = cleanedValue
     }
 
     /// Sets a tag by its ``ID3FrameKey``. User-defined frames (TXXX) are routed to ``customTags``.
     /// Control characters are stripped and the value is trimmed.
     public mutating func set(id3Frame key: ID3FrameKey, value: String) {
-        let value = value.removing(.controlCharacters).trimmed
+        let cleanedValue: String
+        if key.rawValue == "USLT" {
+            cleanedValue = value
+                .replacingOccurrences(of: "\r\n", with: "\n")
+                .replacingOccurrences(of: "\r", with: "\n")
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+        } else {
+            cleanedValue = value.removing(.controlCharacters).trimmed
+        }
 
         if key == .userDefined {
-            customTags[key.rawValue] = value
+            customTags[key.rawValue] = cleanedValue
             return
         }
 
         guard let frame = TagKey(id3Frame: key) else {
-            customTags[key.taglibKey] = value
+            customTags[key.taglibKey] = cleanedValue
             return
         }
 
-        tags[frame] = value
+        tags[frame] = cleanedValue
     }
 
     /// Sets a tag by its ``InfoFrameKey``. Routes to ``tags`` if a matching ``TagKey`` exists.
     /// Control characters are stripped and the value is trimmed.
     public mutating func set(infoFrame key: InfoFrameKey, value: String) {
-        let value = value.removing(.controlCharacters).trimmed
+        let resolvedFrame = TagKey(infoFrame: key)
 
-        if let frame = TagKey(infoFrame: key) {
-            tags[frame] = value
+        let cleanedValue: String
+        if resolvedFrame == .lyrics {
+            cleanedValue = value
+                .replacingOccurrences(of: "\r\n", with: "\n")
+                .replacingOccurrences(of: "\r", with: "\n")
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+        } else {
+            cleanedValue = value.removing(.controlCharacters).trimmed
+        }
+
+        if let frame = resolvedFrame {
+            tags[frame] = cleanedValue
             return
         }
 
-        customTags[key.taglibKey] = value
+        customTags[key.taglibKey] = cleanedValue
     }
 }
